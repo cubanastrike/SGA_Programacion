@@ -13,7 +13,8 @@
 
 
 // import FormularioA from "./components/FormularioA"
-import { ListaAlumno } from "./components/ListaAlumno.jsx";
+
+import { FormularioA } from "./components/FormularioA.jsx";
 
 // import TamanioTexto from "./components/ejemplos/TamanioTexto"
 function App() {
@@ -24,7 +25,7 @@ function App() {
 
   return (
     <>
-      <ListaAlumno />
+      <FormularioA />
     </>
   );
 }
