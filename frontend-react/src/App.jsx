@@ -14,20 +14,41 @@
 
 // import FormularioA from "./components/FormularioA"
 
+import { useState } from "react";
 import { FormularioA } from "./components/FormularioA.jsx";
+import { ListaAlumno } from "./components/ListaAlumno.jsx";
 
 // import TamanioTexto from "./components/ejemplos/TamanioTexto"
 function App() {
+
+  const [actualizar, setActualizar] = useState(0);
+  const [alumnoEditar, setAlumnoEditar] = useState([null]);
+
+  function AlumnoCreado() {
+    setActualizar(valor => valor + 1);
+    setAlumnoEditar([null]);
+  }
+  function seleccionarAlumno(alumno) {
+    setAlumnoEditar([alumno]);
+  }
+
+
   // function guardar(e) {
   //   e.preventDefault();
   //   console.log("Formulario enviado");
   // }
 
   return (
-    <>
-      <FormularioA />
-    </>
+    
+    <main>
+      <FormularioA key={alumnoEditar?.legajo??"nuevo"} onAlumnoCreado={AlumnoCreado} alumnoEditar={alumnoEditar} />
+      <ListaAlumno actualizar={actualizar}
+      onAlumnoCreado={AlumnoCreado} 
+      onSeleccionarAlumno={seleccionarAlumno} />
+    </main>
+
+    
   );
 }
 
-export default App;
+export default App; 

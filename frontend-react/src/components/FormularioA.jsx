@@ -1,6 +1,6 @@
 import { useState } from "react";
 const API_ALUMNOS = "http://localhost:3000/alumnos";
-export function FormularioA() {
+export function FormularioA( {onAlumnoCreado} ) {
     // const [legajo, setLegajo] = useState("");
     // const [carrera, setCarrera] = useState("");
 
@@ -57,6 +57,7 @@ function manejarcambio(e) {
                 nombre: "",
                 correo: ""
             });
+            onAlumnoCreado();
             
         } catch (error) {
             console.error("Error al guardar el alumno:", error);
