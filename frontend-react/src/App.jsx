@@ -22,14 +22,14 @@ import { ListaAlumno } from "./components/ListaAlumno.jsx";
 function App() {
 
   const [actualizar, setActualizar] = useState(0);
-  const [alumnoEditar, setAlumnoEditar] = useState([null]);
+  const [alumnoEditar, setAlumnoEditar] = useState(null);
 
   function AlumnoCreado() {
     setActualizar(valor => valor + 1);
-    setAlumnoEditar([null]);
+    setAlumnoEditar(null);
   }
   function seleccionarAlumno(alumno) {
-    setAlumnoEditar([alumno]);
+    setAlumnoEditar(alumno);
   }
 
 
@@ -41,10 +41,11 @@ function App() {
   return (
     
     <main>
-      <FormularioA key={alumnoEditar?.legajo??"nuevo"} onAlumnoCreado={AlumnoCreado} alumnoEditar={alumnoEditar} />
+      <FormularioA key={alumnoEditar?.legajo??"nuevo"} onAlumnoCreado={AlumnoCreado} alumnoEditar={alumnoEditar}onCancelar={() => setAlumnoEditar(null)}/>
       <ListaAlumno actualizar={actualizar}
       onAlumnoCreado={AlumnoCreado} 
-      onSeleccionarAlumno={seleccionarAlumno} />
+      onEditarAlumno={seleccionarAlumno}
+      />
     </main>
 
     

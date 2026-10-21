@@ -1,6 +1,6 @@
 import { useState } from "react";
 const API_ALUMNOS = "http://localhost:3000/alumnos";
-export function FormularioA( {onAlumnoCreado} ) {
+export function FormularioA( {onAlumnoCreado, alumnoEditar, onCancelar} ) {
     // const [legajo, setLegajo] = useState("");
     // const [carrera, setCarrera] = useState("");
 
@@ -9,10 +9,10 @@ export function FormularioA( {onAlumnoCreado} ) {
 
 const [formulario, setformulario] = useState({
 
-    legajo: "",
-    carrera: "",
-    nombre: "",
-    correo: ""
+    legajo: String(alumnoEditar?.legajo??""),
+    carrera: alumnoEditar?.carrera??"",
+    nombre: alumnoEditar?.nombre??"",
+    correo: alumnoEditar?.correo??""
 });
 const [error, setError] = useState("");
 
@@ -34,14 +34,15 @@ function manejarcambio(e) {
         setError("");
         setGuardando(true);
 
+        const editando = Boolean(alumnoEditar);
+        const url = editando ? `${API_ALUMNOS}/${alumnoEditar.legajo}` : API_ALUMNOS;
         try {
             const alumno = {
                 ...formulario,
                 legajo: Number(formulario.legajo)
-
             }
-            const respuesta = await fetch(API_ALUMNOS, {
-                method: "POST",
+            const respuesta = await fetch(url, { 
+                method: editando ? "PUT" : "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -58,7 +59,6 @@ function manejarcambio(e) {
                 correo: ""
             });
             onAlumnoCreado();
-            
         } catch (error) {
             console.error("Error al guardar el alumno:", error);
             setError(error.message || "Error desconocido al guardar el alumno.");
@@ -66,7 +66,12 @@ function manejarcambio(e) {
             setGuardando(false);
         }
     }
+    function cancelar(){
+        onCancelar()
+    }
+
     return (
+        <h2>{alumnoEditar ? "Editar Alumno" : "Nuevo Alumno"}</h2>,
         <><form onSubmit={guardar}>
             <label htmlFor="legajo">Legajo:</label> <br />
             <input  id="legajo" name="legajo" value={formulario.legajo} onChange={manejarcambio} required /> <br />
@@ -77,9 +82,19 @@ function manejarcambio(e) {
             <label htmlFor="correo">Correo:</label> <br />
             <input id="correo" name="correo" value={formulario.correo} onChange={manejarcambio} required /> <br />
             <button type="submit" disabled={guardando}>
-                {guardando ? "Guardando..." : "Guardar"}
+                {guardando ? "Guardando..." : alumnoEditar ? "Guardar Cambios" : "Guardar"}
 
             </button>
+
+            {alumnoEditar && (
+                <button
+                type="button"
+                onClick={cancelar}
+                disabled={guardando}
+                >
+                    Cancelar
+                </button>
+            )}
             <br />
             {error && <p role="alert">{error}</p>}
         </form>

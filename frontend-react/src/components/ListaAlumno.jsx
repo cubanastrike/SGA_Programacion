@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 const API_ALUMNOS = "http://localhost:3000/alumnos"; 
 
-export function ListaAlumno({ actualizar, onAlumnoCreado }) {
+export function ListaAlumno({ actualizar, onAlumnoCreado, onEditarAlumno }) {
     const [alumnos, setAlumnos] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
@@ -64,10 +64,13 @@ async function eliminarAlumno(legajo) {
                 <ul style={{ listStyleType: "none"}}>
                     {alumnos.map(alumno => (
                         <li key={alumno.legajo}>
-                            {alumno.legajo} - {alumno.nombre} - {alumno.carrera}
+                            {alumno.legajo} - {alumno.nombre} - {alumno.carrera}- {alumno.correo}
                             <br />
-<button type="button" onClick={() => eliminarAlumno(alumno.legajo)}>
+                            <button type="button" onClick={() => eliminarAlumno(alumno.legajo)}>
                                 Eliminar
+                            </button>
+                            <button type="button" onClick={() => onEditarAlumno(alumno)}>
+                                Editar
                             </button>
                         </li>
                     ))}
