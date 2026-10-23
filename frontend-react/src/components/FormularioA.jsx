@@ -1,91 +1,109 @@
 import { useState } from "react";
-const API_ALUMNOS = "http://localhost:3000/alumnos";
-export function FormularioA( {onAlumnoCreado, alumnoEditar, onCancelar} ) {
-    // const [legajo, setLegajo] = useState("");
-    // const [carrera, setCarrera] = useState("");
+const API_ALUMNOS = "http://localhost:3000/alumnos"
 
-    // const [nombre, setNombre] = useState("");
-    // const [correo, setCorreo] = useState("");
+function FormularioA({ onAlumnoCreado, alumnoEditar, onCancelar }){
+    const [formulario, setFormulario] = useState({
+        legajo: String(alumnoEditar?.legajo ?? ""),
+        nombre: alumnoEditar?.nombre ?? "",
+        carrera: alumnoEditar?.carrera ?? "",
+        correo: alumnoEditar?.correo ?? ""
+    })
+    const [error, setError] = useState("")
+    const [guardando, setGuardando] = useState(false)
 
-const [formulario, setformulario] = useState({
+    function manejarCambio(e) {
+        const { name, value} = e.target
 
-    legajo: String(alumnoEditar?.legajo??""),
-    carrera: alumnoEditar?.carrera??"",
-    nombre: alumnoEditar?.nombre??"",
-    correo: alumnoEditar?.correo??""
-});
-const [error, setError] = useState("");
-
-const [guardando, setGuardando] = useState(false);
-
-function manejarcambio(e) {
-    const {name, value} = e.target;
-    setformulario({ 
-        ...formulario,
-        [name]: value
-    });
-}
-
-
-
+        setFormulario({
+            ...formulario,
+            [name]: value
+        })
+    }
 
     async function guardar(e) {
-        e.preventDefault();
-        setError("");
-        setGuardando(true);
-
-        const editando = Boolean(alumnoEditar);
-        const url = editando ? `${API_ALUMNOS}/${alumnoEditar.legajo}` : API_ALUMNOS;
+        e.preventDefault()
+        setError("")
+        setGuardando(true)
+        
+    const alumno = {
+        ...formulario,
+        legajo: Number(formulario.legajo)
+    }
+    const editando = Boolean(alumnoEditar)
+    const url = editando 
+                ? `${API_ALUMNOS}/${alumnoEditar.legajo}`
+                : API_ALUMNOS
         try {
-            const alumno = {
-                ...formulario,
-                legajo: Number(formulario.legajo)
-            }
-            const respuesta = await fetch(url, { 
+            const respuesta = await fetch(url, {
                 method: editando ? "PUT" : "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: {"Content-Type":"application/json"},
                 body: JSON.stringify(alumno)
-            });
+            })
 
             if (!respuesta.ok) {
-                throw new Error("Error al guardar el alumno. Estado HTTP: " + respuesta.status);
+                throw new Error(`No se pudo guardar el alumno. Estado HTTP: ${respuesta.status}`)
             }
-            setformulario({
+
+            setFormulario({
                 legajo: "",
-                carrera: "",
                 nombre: "",
+                carrera: "",
                 correo: ""
-            });
-            onAlumnoCreado();
+            })
+            onAlumnoCreado()
         } catch (error) {
-            console.error("Error al guardar el alumno:", error);
-            setError(error.message || "Error desconocido al guardar el alumno.");
+            console.error("Error al guardar:", error)
+            setError(error.message || "No se pudo conectar con el servidor")
         } finally {
-            setGuardando(false);
+            setGuardando(false)
         }
     }
     function cancelar(){
         onCancelar()
     }
-
-    return (
-        <h2>{alumnoEditar ? "Editar Alumno" : "Nuevo Alumno"}</h2>,
-        <><form onSubmit={guardar}>
-            <label htmlFor="legajo">Legajo:</label> <br />
-            <input  id="legajo" name="legajo" value={formulario.legajo} onChange={manejarcambio} required /> <br />
-            <label htmlFor="carrera">Carrera:</label> <br />
-            <input id="carrera" name="carrera" value={formulario.carrera} onChange={manejarcambio} required /> <br />
-            <label htmlFor="nombre">Nombre:</label> <br />
-            <input id="nombre" name="nombre" value={formulario.nombre} onChange={manejarcambio} required /> <br />
-            <label htmlFor="correo">Correo:</label> <br />
-            <input id="correo" name="correo" value={formulario.correo} onChange={manejarcambio} required /> <br />
+    return(
+        <>
+        <h2>{alumnoEditar ? "Editar alumno" : "Nuevo Alumno"}</h2>
+        <form onSubmit={guardar}>
+            <label htmlFor="legajo">Legajo</label>
+            <input
+            id="legajo"
+            name="legajo"
+            value={formulario.legajo}
+            onChange={manejarCambio}
+            required
+            />
+            <label htmlFor="nombre">Nombre</label>
+            <input
+            id="nombre"
+            name="nombre"
+            value={formulario.nombre}
+            onChange={manejarCambio}
+            required
+            />
+            <label htmlFor="carrera">Carrera</label>
+            <input
+            id="carrera"
+            name="carrera"
+            value={formulario.carrera}
+            onChange={manejarCambio}
+            required
+            />
+            <label htmlFor="correo">Correo</label>
+            <input
+            id="correo"
+            name="correo"
+            value={formulario.correo}
+            onChange={manejarCambio}
+            required
+            />
             <button type="submit" disabled={guardando}>
-                {guardando ? "Guardando..." : alumnoEditar ? "Guardar Cambios" : "Guardar"}
-
+                {guardando 
+                ? "Guardando..." 
+                : alumnoEditar 
+                    ? "Guardar cambios"
+                    : "Guardar"}
             </button>
-
             {alumnoEditar && (
                 <button
                 type="button"
@@ -98,9 +116,7 @@ function manejarcambio(e) {
             <br />
             {error && <p role="alert">{error}</p>}
         </form>
-        
         </>
     )
-    
-
 }
+export default FormularioA
