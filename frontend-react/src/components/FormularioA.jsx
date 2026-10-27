@@ -62,61 +62,75 @@ function FormularioA({ onAlumnoCreado, alumnoEditar, onCancelar }){
         onCancelar()
     }
     return(
-        <>
-        <h2>{alumnoEditar ? "Editar alumno" : "Nuevo Alumno"}</h2>
-        <form onSubmit={guardar}>
-            <label htmlFor="legajo">Legajo</label>
-            <input
-            id="legajo"
-            name="legajo"
-            value={formulario.legajo}
-            onChange={manejarCambio}
-            required
-            />
-            <label htmlFor="nombre">Nombre</label>
-            <input
-            id="nombre"
-            name="nombre"
-            value={formulario.nombre}
-            onChange={manejarCambio}
-            required
-            />
-            <label htmlFor="carrera">Carrera</label>
-            <input
-            id="carrera"
-            name="carrera"
-            value={formulario.carrera}
-            onChange={manejarCambio}
-            required
-            />
-            <label htmlFor="correo">Correo</label>
-            <input
-            id="correo"
-            name="correo"
-            value={formulario.correo}
-            onChange={manejarCambio}
-            required
-            />
-            <button type="submit" disabled={guardando}>
-                {guardando 
-                ? "Guardando..." 
-                : alumnoEditar 
-                    ? "Guardar cambios"
-                    : "Guardar"}
-            </button>
-            {alumnoEditar && (
-                <button
-                type="button"
-                onClick={cancelar}
-                disabled={guardando}
-                >
-                    Cancelar
-                </button>
-            )}
-            <br />
-            {error && <p role="alert">{error}</p>}
-        </form>
-        </>
+        <section className="form-card">
+            <div className="section-heading">
+                <span className="section-heading__eyebrow">Gestión académica</span>
+                <h2>{alumnoEditar ? "Editar alumno" : "Nuevo Alumno"}</h2>
+                <p>Completá los datos para registrar o actualizar un alumno.</p>
+            </div>
+            <form className="student-form" onSubmit={guardar}>
+                <div className="student-form__field">
+                    <label htmlFor="legajo">Legajo</label>
+                    <input
+                    id="legajo"
+                    name="legajo"
+                    value={formulario.legajo}
+                    onChange={manejarCambio}
+                    required
+                    />
+                </div>
+                <div className="student-form__field">
+                    <label htmlFor="nombre">Nombre</label>
+                    <input
+                    id="nombre"
+                    name="nombre"
+                    value={formulario.nombre}
+                    onChange={manejarCambio}
+                    required
+                    />
+                </div>
+                <div className="student-form__field">
+                    <label htmlFor="carrera">Carrera</label>
+                    <input
+                    id="carrera"
+                    name="carrera"
+                    value={formulario.carrera}
+                    onChange={manejarCambio}
+                    required
+                    />
+                </div>
+                <div className="student-form__field">
+                    <label htmlFor="correo">Correo</label>
+                    <input
+                    id="correo"
+                    name="correo"
+                    value={formulario.correo}
+                    onChange={manejarCambio}
+                    required
+                    />
+                </div>
+                <div className="student-form__actions">
+                    <button className="button button--primary" type="submit" disabled={guardando}>
+                        {guardando
+                        ? "Guardando..."
+                        : alumnoEditar
+                            ? "Guardar cambios"
+                            : "Guardar"}
+                    </button>
+                    {alumnoEditar && (
+                        <button
+                        className="button button--secondary"
+                        type="button"
+                        onClick={cancelar}
+                        disabled={guardando}
+                        >
+                            Cancelar
+                        </button>
+                    )}
+                </div>
+                {error && <p className="form-error" role="alert">{error}</p>}
+            </form>
+        </section>
     )
 }
 export default FormularioA

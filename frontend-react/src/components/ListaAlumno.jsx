@@ -49,37 +49,49 @@ export function ListaAlumnos({ actualizar, onAlumnoCreado, onEditarAlumno }) {
     }, [actualizar])
 
     if (cargando) {
-        return <p>Cargando alumnos...</p>
+        return <p className="list-message">Cargando alumnos...</p>
     }
     if (error) {
-        return <p role="alert">{error}</p>
+        return <p className="list-message list-message--error" role="alert">{error}</p>
     }
     return (
-    <section>
-    <h2>Alumnos</h2>
-    {alumnos.length === 0 
-    ? (<p>No hay alumnos registrados.</p>)
-    : ( 
-        <ul style={{listStyle:"none"}}>
-        {alumnos.map(alumno => (
-            <li key={alumno.legajo}>
-            {alumno.legajo} - {alumno.nombre} - {alumno.carrera}
-            <br />
-            <button
-            type="button"
-            onClick={() => onEditarAlumno(alumno)}>
-                Editar
-            </button>
-            <button 
-            type="button"
-            onClick={()=> eliminarAlumno(alumno.legajo)}
-            >
-                Eliminar
-            </button>
-        </li>)
-    )}
-    </ul>
-    )}
-    </section>
+        <section className="student-list">
+            <div className="section-heading">
+                <span className="section-heading__eyebrow">Alumnado</span>
+                <h2>Alumnos</h2>
+                <p>Consultá y administrá los alumnos registrados.</p>
+            </div>
+            {alumnos.length === 0
+                ? <p className="list-message">No hay alumnos registrados.</p>
+                : (
+                    <ul className="student-list__items">
+                        {alumnos.map(alumno => (
+                            <li className="student-card" key={alumno.legajo}>
+                                <div className="student-card__details">
+                                    <span className="student-card__id">Legajo {alumno.legajo}</span>
+                                    <span className="student-card__name">{alumno.nombre}</span>
+                                    <span className="student-card__career">{alumno.carrera}</span>
+                                </div>
+                                <div className="student-card__actions">
+                                    <button
+                                        className="button button--secondary"
+                                        type="button"
+                                        onClick={() => onEditarAlumno(alumno)}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        className="button button--danger"
+                                        type="button"
+                                        onClick={() => eliminarAlumno(alumno.legajo)}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+        </section>
     )
 }
