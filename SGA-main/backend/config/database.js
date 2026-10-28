@@ -1,3 +1,6 @@
+//La variable de entorno MONGO_URI que se encuentra en el archivo .env. Esta variable contiene la dirección de la base de datos MongoDB a la que se desea conectar la aplicación.
+
+
 // Importa Mongoose para poder conectar Node.js con MongoDB.
 const mongoose = require("mongoose")
 

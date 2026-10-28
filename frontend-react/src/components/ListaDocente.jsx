@@ -3,10 +3,8 @@ const API_DOCENTES = "http://localhost:3000/docentes";
 
 export function ListaDocentes({
   actualizar,
-  ondodocenteCreado,
-  onEditardodocente,
-  onDocenteCreado = ondodocenteCreado,
-  onEditarDocente = onEditardodocente,
+  onDocenteCreado,
+  onEditarDocente,
 }) {
   const [docentes, setDocentes] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -78,7 +76,7 @@ export function ListaDocentes({
   return (
     <section className="student-list">
       <div className="section-heading">
-        <span className="section-heading__eyebrow">Alumnado</span>
+        <span className="section-heading__eyebrow">Gestión académica</span>
         <h2>Docentes</h2>
         <p>Consultá y administrá los docentes registrados.</p>
       </div>
@@ -90,16 +88,16 @@ export function ListaDocentes({
           {docentes.map((docente) => (
             <li className="student-card" key={docente.dni}>
               <div className="student-card__details">
-                <span className="student-card__id">Legajo {docente.dni}</span>
+                <span className="student-card__id">DNI {docente.dni}</span>
                 <span className="student-card__name">{docente.nombre}</span>
-                <span className="student-card__career">{docente.carrera}</span>
+                <span className="student-card__career">{docente.especialidad}</span>
               </div>
 
               <div className="student-card__actions">
                 <button
                   className="button button--secondary"
                   type="button"
-                  onClick={() => onEditarDocente?.(docente)}
+                  onClick={() => onEditarDocente(docente)}
                 >
                   Editar
                 </button>

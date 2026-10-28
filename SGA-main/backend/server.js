@@ -5,12 +5,13 @@ const cors = require("cors") // Importamos cors para poder permitir el acceso a 
 
 const conectarDB = require("./config/database") // Importamos la función conectarDB para poder conectarnos a la base de datos
 const alumnosRoutes = require("./routes/alumnos.routes") // Importamos las rutas de alumnos para poder usarlas en el servidor
-
+const docentesRoutes = require("./routes/docentes.routes") // Importamos las rutas de docentes para poder usarlas en el servidor
 const app = express() // Creamos una instancia de express para poder usar sus funcionalidades
 
 app.use(express.json()) // Middleware para poder recibir datos en formato JSON en las peticiones de la API
 app.use(cors()) // Middleware para permitir el acceso a la API desde otros dominios
 app.use("/alumnos", alumnosRoutes) // Middleware para usar las rutas de alumnos en la API, indicando que todas las rutas de alumnos estarán bajo el prefijo /alumnos
+app.use("/docentes", docentesRoutes) // Middleware para usar las rutas de docentes en la API, indicando que todas las rutas de docentes estarán bajo el prefijo /docentes
 
 const PORT = process.env.PORT // Definimos el puerto en el que se ejecutará el servidor, tomando el valor de la variable de entorno PORT definida en el archivo .env
 

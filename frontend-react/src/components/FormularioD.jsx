@@ -1,12 +1,12 @@
 import { useState } from "react";
 const API_DOCENTES = "http://localhost:3000/docentes"
 
-function FormularioD({ onDocenteCreado, DocenteEditar, onCancelar }){
+function FormularioD({ onDocenteCreado, docenteEditar, onCancelar }){
     const [formulario, setFormulario] = useState({
-        legajo: String(DocenteEditar?.dni ?? ""),
-        nombre: DocenteEditar?.nombre ?? "",
-        especialidad: DocenteEditar?.especialidad ?? "",
-        correo: DocenteEditar?.correo ?? ""
+        dni: String(docenteEditar?.dni ?? ""),
+        nombre: docenteEditar?.nombre ?? "",
+        especialidad: docenteEditar?.especialidad ?? "",
+        correo: docenteEditar?.correo ?? ""
     })
     const [error, setError] = useState("")
     const [guardando, setGuardando] = useState(false)
@@ -29,9 +29,9 @@ function FormularioD({ onDocenteCreado, DocenteEditar, onCancelar }){
         ...formulario,
         dni: Number(formulario.dni)
     }
-    const editando = Boolean(DocenteEditar)
+    const editando = Boolean(docenteEditar)
     const url = editando 
-                ? `${API_DOCENTES}/${DocenteEditar.legajo}`
+                ? `${API_DOCENTES}/${docenteEditar.dni}`
                 : API_DOCENTES
         try {
             const respuesta = await fetch(url, {
@@ -65,18 +65,19 @@ function FormularioD({ onDocenteCreado, DocenteEditar, onCancelar }){
         <section className="form-card">
             <div className="section-heading">
                 <span className="section-heading__eyebrow">Gestión académica</span>
-                <h2>{DocenteEditar ? "Editar Docente" : "Nuevo Docente"}</h2>
+                <h2>{docenteEditar ? "Editar docente" : "Nuevo docente"}</h2>
                 <p>Completá los datos para registrar o actualizar un Docente.</p>
             </div>
             <form className="student-form" onSubmit={guardar}>
                 <div className="student-form__field">
-                    <label htmlFor="dni">Legajo</label>
+                    <label htmlFor="dni">DNI</label>
                     <input
                     id="dni"
                     name="dni"
                     value={formulario.dni}
                     onChange={manejarCambio}
                     required
+                    disabled={Boolean(docenteEditar)}
                     />
                 </div>
                 <div className="student-form__field">
@@ -113,11 +114,11 @@ function FormularioD({ onDocenteCreado, DocenteEditar, onCancelar }){
                     <button className="button button--primary" type="submit" disabled={guardando}>
                         {guardando
                         ? "Guardando..."
-                        : DocenteEditar
+                        : docenteEditar
                             ? "Guardar cambios"
                             : "Guardar"}
                     </button>
-                    {DocenteEditar && (
+                    {docenteEditar && (
                         <button
                         className="button button--secondary"
                         type="button"

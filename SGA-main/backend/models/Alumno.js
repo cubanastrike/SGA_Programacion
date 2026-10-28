@@ -11,6 +11,11 @@ const alumnoSchema = new mongoose.Schema({ // Definimos el esquema de datos de l
     carrera: String,
     correo: String
 },
+
+
+
+
+
 { 
     versionKey: false // Deshabilitamos la versión de los documentos, para que no se cree el campo __v en los documentos de la colección de alumnos
 }
