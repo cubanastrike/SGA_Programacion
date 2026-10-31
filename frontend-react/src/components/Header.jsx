@@ -29,6 +29,7 @@ export default function Header() {
                     <Link to="/">Inicio</Link>
                     <Link to="/alumnos">Alumnos</Link>
                     <Link to="/docentes">Docente</Link>
+                    <Link to="/materias">Materias</Link>
                     <Link to="/ayuda" aria-label="Ayuda">?</Link>
                 </nav>
                 <div className="site-header__theme">
