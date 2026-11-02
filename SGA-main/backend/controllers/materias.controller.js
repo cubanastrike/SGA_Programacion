@@ -1,5 +1,6 @@
 const Materia = require("../models/Materia");
 
+// Valida los datos en la capa de negocio para devolver mensajes claros antes de consultar/guardar.
 function validarDatosMateria(data = {}) {
   const {
     codigo,
@@ -48,9 +49,11 @@ function validarDatosMateria(data = {}) {
 
 async function obtenerMaterias(req, res) {
   try {
+    // find() consulta todos los documentos; sort() organiza el resultado por nombre.
     const materias = await Materia.find().sort({ nombre: 1 });
     res.json(materias);
   } catch (error) {
+    // Se registra el detalle en el servidor, pero al cliente solo se le envía un mensaje general.
     console.error(error);
     res.status(500).json({
       mensaje: "No se pudieron obtener las materias."
@@ -61,6 +64,7 @@ async function obtenerMaterias(req, res) {
 async function obtenerMateria(req, res) {
   try {
     const { codigo } = req.params;
+    // La búsqueda usa el código de negocio, nunca el identificador interno de MongoDB.
     const materia = await Materia.findOne({ codigo });
 
     if (!materia) {
@@ -95,6 +99,7 @@ async function crearMateria(req, res) {
     const cargaHoraria = Number(cuerpo.cargaHoraria);
     const estado = cuerpo.estado;
 
+    // Esta consulta permite responder pronto al duplicado; el índice único cubre carreras concurrentes.
     const existe = await Materia.findOne({ codigo });
 
     if (existe) {
@@ -132,18 +137,33 @@ async function actualizarMateria(req, res) {
     const { codigo: codigoOriginal } = req.params;
     const cuerpo = req.body || {};
 
-    const codigoNuevo = cuerpo.codigo !== undefined ? String(cuerpo.codigo).trim() : codigoOriginal;
-    const nombre = cuerpo.nombre !== undefined ? String(cuerpo.nombre).trim() : undefined;
-    const descripcion = cuerpo.descripcion !== undefined ? String(cuerpo.descripcion).trim() : undefined;
-    const cargaHoraria = cuerpo.cargaHoraria !== undefined ? Number(cuerpo.cargaHoraria) : undefined;
-    const estado = cuerpo.estado !== undefined ? cuerpo.estado : undefined;
-
-    if (codigoNuevo === "") {
-      return res.status(400).json({
-        mensaje: "El código no puede estar vacío."
+    // Primero se obtiene la materia para confirmar que existe y completar los campos omitidos.
+    const materiaExistente = await Materia.findOne({ codigo: codigoOriginal });
+    if (!materiaExistente) {
+      return res.status(404).json({
+        mensaje: "Materia no encontrada."
       });
     }
 
+    // PUT puede enviar solo algunos campos; se combinan con los actuales para validar el resultado completo.
+    const materiaPropuesta = {
+      codigo: cuerpo.codigo !== undefined ? cuerpo.codigo : materiaExistente.codigo,
+      nombre: cuerpo.nombre !== undefined ? cuerpo.nombre : materiaExistente.nombre,
+      descripcion: cuerpo.descripcion !== undefined ? cuerpo.descripcion : materiaExistente.descripcion,
+      cargaHoraria: cuerpo.cargaHoraria !== undefined ? cuerpo.cargaHoraria : materiaExistente.cargaHoraria,
+      estado: cuerpo.estado !== undefined ? cuerpo.estado : materiaExistente.estado
+    };
+
+    const validacion = validarDatosMateria(materiaPropuesta);
+
+    if (validacion) {
+      return res.status(400).json({
+        mensaje: validacion
+      });
+    }
+
+    // El código puede cambiar, pero se busca el registro usando siempre el código anterior de la URL.
+    const codigoNuevo = materiaPropuesta.codigo;
     if (codigoNuevo !== codigoOriginal) {
       const existeCodigo = await Materia.findOne({ codigo: codigoNuevo });
       if (existeCodigo) {
@@ -154,27 +174,13 @@ async function actualizarMateria(req, res) {
     }
 
     const datosActualizados = {
-      ...(cuerpo.codigo !== undefined ? { codigo: codigoNuevo } : {}),
-      ...(cuerpo.nombre !== undefined ? { nombre } : {}),
-      ...(cuerpo.descripcion !== undefined ? { descripcion } : {}),
-      ...(cuerpo.cargaHoraria !== undefined ? { cargaHoraria } : {}),
-      ...(cuerpo.estado !== undefined ? { estado } : {})
+      ...materiaPropuesta,
+      nombre: materiaPropuesta.nombre.trim(),
+      descripcion: materiaPropuesta.descripcion.trim(),
+      cargaHoraria: Number(materiaPropuesta.cargaHoraria)
     };
 
-    const validacion = validarDatosMateria({
-      codigo: datosActualizados.codigo ?? codigoOriginal,
-      nombre: datosActualizados.nombre ?? (await Materia.findOne({ codigo: codigoOriginal })?.nombre ?? ""),
-      descripcion: datosActualizados.descripcion ?? (await Materia.findOne({ codigo: codigoOriginal })?.descripcion ?? ""),
-      cargaHoraria: datosActualizados.cargaHoraria ?? (await Materia.findOne({ codigo: codigoOriginal })?.cargaHoraria ?? 0),
-      estado: datosActualizados.estado ?? (await Materia.findOne({ codigo: codigoOriginal })?.estado ?? "activa")
-    });
-
-    if (validacion) {
-      return res.status(400).json({
-        mensaje: validacion
-      });
-    }
-
+    // runValidators hace que las reglas del esquema también se ejecuten durante la actualización.
     const materiaActualizada = await Materia.findOneAndUpdate(
       { codigo: codigoOriginal },
       datosActualizados,
@@ -209,6 +215,7 @@ async function actualizarMateria(req, res) {
 async function eliminarMateria(req, res) {
   try {
     const { codigo } = req.params;
+    // findOneAndDelete elimina por código y devuelve null si no había una materia coincidente.
     const materia = await Materia.findOneAndDelete({ codigo });
 
     if (!materia) {

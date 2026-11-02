@@ -2,11 +2,13 @@ import { useState } from "react";
 
 const API_MATERIAS = "http://localhost:3000/materias";
 
+// El formulario sirve para altas y ediciones; la página le comunica qué materia editar.
 function FormularioMateria({
   onMateriaCreada,
   materiaEditar,
   onCancelar,
 }) {
+  // Inicializa los campos con la materia elegida o con valores vacíos para un alta nueva.
   const [formulario, setFormulario] = useState({
     codigo: materiaEditar?.codigo ?? "",
     nombre: materiaEditar?.nombre ?? "",
@@ -20,6 +22,7 @@ function FormularioMateria({
   function manejarCambio(e) {
     const { name, value } = e.target;
 
+    // El atributo name de cada input indica qué propiedad del estado debe actualizarse.
     setFormulario((formularioActual) => ({
       ...formularioActual,
       [name]: value,
@@ -27,6 +30,7 @@ function FormularioMateria({
   }
 
   function validarFormulario() {
+    // Estas verificaciones dan respuesta inmediata; el servidor debe repetirlas por seguridad de datos.
     if (!formulario.codigo.trim()) {
       return "El código es obligatorio.";
     }
@@ -76,18 +80,21 @@ function FormularioMateria({
     };
 
     const editando = Boolean(materiaEditar);
+    // En edición se identifica el recurso por su código actual, no por el _id de MongoDB.
     const url = editando
       ? `${API_MATERIAS}/${encodeURIComponent(materiaEditar.codigo)}`
       : API_MATERIAS;
 
     try {
       const respuesta = await fetch(url, {
+        // POST crea y PUT modifica; el cuerpo transporta los campos como JSON.
         method: editando ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(materia),
       });
 
       if (!respuesta.ok) {
+        // Se intenta mostrar el mensaje del backend y se usa el estado HTTP como alternativa.
         let mensaje = `No se pudo guardar la materia. Estado HTTP: ${respuesta.status}`;
         const tipoContenido = respuesta.headers.get("content-type") ?? "";
 
@@ -104,6 +111,7 @@ function FormularioMateria({
         throw new Error(mensaje);
       }
 
+      // La página escucha este callback para limpiar el modo edición y actualizar el listado.
       onMateriaCreada();
     } catch (error) {
       console.error("Error al guardar la materia:", error);

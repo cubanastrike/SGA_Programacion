@@ -105,3 +105,14 @@ Content-Type: application/json
 
 ### Eliminar una materia
 DELETE http://localhost:3000/materias/PRG1
+
+
+#### Registrar un usuario válido
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "mati@gmail.com",
+  "password": "password123"
+
+}

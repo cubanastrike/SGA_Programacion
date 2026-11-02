@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 const API_MATERIAS = "http://localhost:3000/materias";
 
+// Este componente consulta y presenta las materias y ofrece acciones sobre cada código.
 export function ListaMaterias({
   actualizar,
   onMateriaCreada,
@@ -23,6 +24,7 @@ export function ListaMaterias({
     setError("");
 
     try {
+      // La URL se construye con el código funcional; encodeURIComponent protege caracteres especiales.
       const respuesta = await fetch(
         `${API_MATERIAS}/${encodeURIComponent(codigo)}`,
         { method: "DELETE" }
@@ -47,6 +49,7 @@ export function ListaMaterias({
       setError("");
 
       try {
+        // La dependencia actualizar vuelve a ejecutar esta consulta tras cada operación exitosa.
         const respuesta = await fetch(API_MATERIAS);
 
         if (!respuesta.ok) {
@@ -57,6 +60,7 @@ export function ListaMaterias({
 
         const datos = await respuesta.json();
 
+        // Comprobar el tipo evita intentar renderizar una respuesta inesperada como si fuera una lista.
         if (!Array.isArray(datos)) {
           throw new Error("La respuesta del servidor no contiene una lista.");
         }
@@ -85,6 +89,7 @@ export function ListaMaterias({
     );
   }
 
+  // codigo identifica cada materia de forma estable también para las claves que React requiere.
   return (
     <section className="student-list">
       <div className="section-heading">
