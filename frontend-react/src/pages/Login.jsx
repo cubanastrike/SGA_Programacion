@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { Alert, Box, Button, TextField, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
+import { useNavigate } from "react-router-dom"
 
 export default function Login() {
+    const navigate = useNavigate()
     const theme = useTheme()
     const [usuario, setUsuario] = useState(null)
     const [error, setError] = useState("")
@@ -30,10 +32,12 @@ export default function Login() {
                 throw new Error(datos.mensaje || "No se pudo iniciar sesión")
             }
 
+            localStorage.setItem("token", datos.token)
             setUsuario(datos)
             setMensaje(datos.mensaje)
             setEmail("")
             setPassword("")
+            navigate("/")
         } catch (error) {
             console.error("Error en login:", error)
             setError(error.message || "No se pudo conectar con el servidor.")

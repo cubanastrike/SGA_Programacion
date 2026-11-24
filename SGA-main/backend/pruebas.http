@@ -1,5 +1,6 @@
 GET http://localhost:3000/alumnos
 
+
 ###
 GET http://localhost:3000/alumnos/1002
 
@@ -116,3 +117,20 @@ Content-Type: application/json
   "password": "password123"
 
 }
+
+
+
+### Registrar un usuario inválido
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "mati@gmail.com",
+  "password": "incorrecta"
+}
+###
+GET http://localhost:3000/alumnos
+
+###
+GET http://localhost:3000/alumnos
+Authorization: Bearer {{token}}
