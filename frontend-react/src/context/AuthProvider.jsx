@@ -5,6 +5,11 @@ const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() => localStorage.getItem("token"))
     const [cargando, setCargando] = useState(true)
 
+    function cerrarSesion() {
+        localStorage.removeItem("token")
+        setToken(null)
+    }
+
     useEffect(() => {
         let activo = true
 
@@ -51,7 +56,7 @@ const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ token, setToken, cargando }}>
+        <AuthContext.Provider value={{ token, setToken, cargando, cerrarSesion }}>
             {children}
         </AuthContext.Provider>
     )

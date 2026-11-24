@@ -2,98 +2,32 @@
 
 Proyecto desarrollado durante la materia Programación IV.
 
-## Descripción
-
-El Sistema de Gestión Académica (SGA) es una aplicación web que permitirá administrar alumnos, docentes, cursos y materias.
-
-Durante el desarrollo del proyecto se incorporarán progresivamente nuevas tecnologías y funcionalidades.
-
-
-## Objetivos
-
-- Gestionar alumnos.
-- Gestionar docentes.
-- Gestionar cursos.
-- Gestionar materias.
-- Implementar autenticación de usuarios.
-- Consumir una API REST.
-- Persistir la información en MongoDB.
-
-
 ## Tecnologías
 
-Actualmente:
+- Frontend React: React, Vite, React Router y Material UI.
+- Frontend original: HTML, CSS y JavaScript.
+- Backend: Node.js, Express y Mongoose.
+- Base de datos: MongoDB.
+- Autenticación: bcrypt y JSON Web Tokens (JWT).
 
-- HTML5
-- JavaScript
-- CSS
-- express
-- Node.js
-- MongoDB
+## Funcionalidades
 
+- Gestión de alumnos, docentes y materias.
+- API REST conectada a MongoDB.
+- Inicio de sesión con email y contraseña.
+- Protección de rutas y operaciones de alumnos y docentes mediante JWT.
+- Cierre de sesión desde la interfaz React.
 
-Próximamente:
-- React
+## Autenticación
 
+El inicio de sesión se realiza mediante `POST /auth/login`. El backend devuelve un
+token JWT que el frontend utiliza como `Authorization: Bearer <token>` al acceder
+a las rutas protegidas. La sesión se puede cerrar desde la navegación principal.
 
-## Estado del proyecto
+Configurar `PORT`, `MONGO_URI` y `JWT_SECRET` en `backend/.env`. La duración del
+token puede configurarse opcionalmente con `JWT_EXPIRES_IN`. No subir al
+repositorio archivos `.env` ni tokens reales.
 
-- Versión: 
-Clase 12 - Estructura actual
-SGA/
-frontend
- ├── index.html
- ├── alumnos.html
- ├── docentes.html
- │
- ├── css/
- │   └── estilos.css
- │
- └── js/
-      ├── alumnos.js
-      └── docentes.js
-backend
- ├── config/
- |    └── database.js
- ├── controllers/
- |    └── alumnos.controller.js
- ├── data/
- |    └── alumnos.js
- ├── models/
- |    └── Alumno.js
- ├── routes/
-      └── alumnos.routes.js
+## Autoría
 
-## Estado actual
-- Página de inicio y navegación entre módulos
-- Módulo alumnos docentes
-- CRUD alumnos/docentes
-- Validaciones de formularios
-- Persistencia mediante localStorage
-- Organización del código y refactorización
-- Separación inicial entre Frontend y Backend
-- Implementación de validaciones para los datos recibidos mediante req.body
-- Uso de status 400 para datos inválidos
-- status 404 para alumno no encontrado
-- status 201 para registrar nuevo alumno
-- Manejo básico de errores en la operaciones del CRUD.
-- Instalación de mongoose
-- Creación de la conexión con MongoDB en config/database.js
-- Creación del Schema y modelo Alumno
-- Reemplazo del array en memoria por una colección de MongoDB
-- Modificación de GET /alumnos para consultar MongoDB mediante mongoose
-- Prueba de la API con datos almacenados en MongoDB
-
-
-## Almacenamiento
-
-- localStorage
-- JSON.stringify()
-- JSON.parse()
-- MongoDB
-
-## Autor
-
-Irina Agretti
-
-Programación IV
+Proyecto de la materia Programación IV, basado en el repositorio de la cátedra.
