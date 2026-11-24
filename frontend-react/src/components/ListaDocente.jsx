@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/useAuth";
 const API_DOCENTES = "http://localhost:3000/docentes";
 
 export function ListaDocentes({
@@ -6,6 +7,7 @@ export function ListaDocentes({
   onDocenteCreado,
   onEditarDocente,
 }) {
+  const { token } = useAuth();
   const [docentes, setDocentes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -19,6 +21,7 @@ export function ListaDocentes({
     try {
       const respuesta = await fetch(`${API_DOCENTES}/${dni}`, {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!respuesta.ok) {
@@ -40,7 +43,9 @@ export function ListaDocentes({
       setError("");
 
       try {
-        const respuesta = await fetch(API_DOCENTES);
+        const respuesta = await fetch(API_DOCENTES, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (!respuesta.ok) {
           throw new Error(
@@ -59,7 +64,7 @@ export function ListaDocentes({
     }
 
     cargarDocentes();
-  }, [actualizar]);
+  }, [actualizar, token]);
 
   if (cargando) {
     return <p className="list-message">Cargando docentes...</p>;

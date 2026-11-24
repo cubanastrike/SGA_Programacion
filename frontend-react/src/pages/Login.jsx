@@ -2,9 +2,11 @@ import { useState } from "react"
 import { Alert, Box, Button, TextField, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/useAuth"
 
 export default function Login() {
     const navigate = useNavigate()
+    const { setToken } = useAuth()
     const theme = useTheme()
     const [usuario, setUsuario] = useState(null)
     const [error, setError] = useState("")
@@ -33,6 +35,7 @@ export default function Login() {
             }
 
             localStorage.setItem("token", datos.token)
+            setToken(datos.token)
             setUsuario(datos)
             setMensaje(datos.mensaje)
             setEmail("")

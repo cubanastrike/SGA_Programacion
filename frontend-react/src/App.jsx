@@ -6,22 +6,20 @@ import LayoutPpal from "./layouts/LayoutPpal"
 import Inicio from "./pages/inicio"
 import Materias from "./pages/Materias"
 import Login from "./pages/Login"
+import RutaProtegida from "./components/RutaProtegida"
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<LayoutPpal />}>
-        <Route index element={<Inicio />} />
-        <Route path="/alumnos" element={<Alumnos />} />
-      <Route path="docentes" element={<Docentes />} />
-      <Route path="materias" element={<Materias />} />
-      <Route path="/ayuda" element={<FAQ />} />
-      
-
-
-
-
+      <Route element={<RutaProtegida />}>
+        <Route path="/" element={<LayoutPpal />}>
+          <Route index element={<Inicio />} />
+          <Route path="alumnos" element={<Alumnos />} />
+          <Route path="docentes" element={<Docentes />} />
+          <Route path="materias" element={<Materias />} />
+          <Route path="ayuda" element={<FAQ />} />
+        </Route>
       </Route>
     </Routes>
   )

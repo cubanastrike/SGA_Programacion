@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useAuth } from "../context/useAuth";
 const API_ALUMNOS = "http://localhost:3000/alumnos"
 
 function FormularioA({ onAlumnoCreado, alumnoEditar, onCancelar }){
+    const { token } = useAuth()
     const [formulario, setFormulario] = useState({
         legajo: String(alumnoEditar?.legajo ?? ""),
         nombre: alumnoEditar?.nombre ?? "",
@@ -36,7 +38,10 @@ function FormularioA({ onAlumnoCreado, alumnoEditar, onCancelar }){
         try {
             const respuesta = await fetch(url, {
                 method: editando ? "PUT" : "POST",
-                headers: {"Content-Type":"application/json"},
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify(alumno)
             })
 
