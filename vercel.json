@@ -1,6 +1,6 @@
 {
-  "installCommand": "npm --prefix frontend-react ci",
-  "buildCommand": "npm --prefix frontend-react run build",
+  "installCommand": "cd frontend-react && npm ci --workspaces=false",
+  "buildCommand": "cd frontend-react && npm run build",
   "outputDirectory": "frontend-react/dist",
   "rewrites": [
     {
