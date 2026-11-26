@@ -16,7 +16,7 @@ app.use("/docentes", docentesRoutes) // Middleware para usar las rutas de docent
 app.use("/materias", materiasRoutes) // Todas las rutas de materias quedan bajo el prefijo /materias
 app.use("/auth", authRoutes) // Middleware para usar las rutas de autenticación en la API, indicando que todas las rutas de autenticación estarán bajo el prefijo /auth
 
-const PORT = process.env.PORT // Definimos el puerto en el que se ejecutará el servidor, tomando el valor de la variable de entorno PORT definida en el archivo .env
+const PORT = process.env.PORT || 3000 // Definimos el puerto en el que se ejecutará el servidor, tomando el valor de la variable de entorno PORT definida en el archivo .env
 
 conectarDB() // Llamamos a la función conectarDB para conectarnos a la base de datos
 

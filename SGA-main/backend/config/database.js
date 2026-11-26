@@ -3,6 +3,18 @@
 
 // Importa Mongoose para poder conectar Node.js con MongoDB.
 const mongoose = require("mongoose")
+const dns = require("node:dns")
+
+const dnsServers = process.env.MONGODB_DNS_SERVERS
+    ?.split(",")
+    .map(server => server.trim())
+    .filter(Boolean)
+
+if (dnsServers?.length) {
+    dns.setServers(dnsServers)
+} else if (dns.getServers().some(server => server === "127.0.0.1" || server === "::1")) {
+    dns.setServers(["1.1.1.1", "8.8.8.8"])
+}
 
 // Función que se encarga de conectar la aplicación con la base de datos.
 async function conectarBD(){ //async => Indica que la función es asíncrona, lo que permite usar await dentro de ella.

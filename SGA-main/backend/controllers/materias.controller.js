@@ -1,244 +1,187 @@
-const Materia = require("../models/Materia");
-
-// Valida los datos en la capa de negocio para devolver mensajes claros antes de consultar/guardar.
-function validarDatosMateria(data = {}) {
-  const {
-    codigo,
-    nombre,
-    descripcion,
-    cargaHoraria,
-    estado
-  } = data;
-
-  if (codigo === undefined || codigo === null || String(codigo).trim() === "") {
-    return "El código es obligatorio.";
-  }
-
-  if (typeof codigo !== "string" || codigo !== codigo.trim()) {
-    return "El código no puede tener espacios al comienzo o al final.";
-  }
-
-  if (nombre === undefined || nombre === null || String(nombre).trim() === "") {
-    return "El nombre es obligatorio.";
-  }
-
-  if (descripcion !== undefined && descripcion !== null && typeof descripcion !== "string") {
-    return "La descripción debe ser un texto.";
-  }
-
-  if (descripcion !== undefined && descripcion !== null && descripcion.trim() === "" && descripcion !== "") {
-    return "La descripción no puede contener solo espacios.";
-  }
-
-  if (cargaHoraria === undefined || cargaHoraria === null || cargaHoraria === "") {
-    return "La carga horaria es obligatoria.";
-  }
-
-  const carga = Number(cargaHoraria);
-
-  if (!Number.isInteger(carga) || carga <= 0) {
-    return "La carga horaria debe ser un número entero mayor que cero.";
-  }
-
-  if (!["activa", "inactiva"].includes(estado)) {
-    return "El estado debe ser activa o inactiva.";
-  }
-
-  return null;
-}
+const Materia = require("../models/Materia")
 
 async function obtenerMaterias(req, res) {
-  try {
-    // find() consulta todos los documentos; sort() organiza el resultado por nombre.
-    const materias = await Materia.find().sort({ nombre: 1 });
-    res.json(materias);
-  } catch (error) {
-    // Se registra el detalle en el servidor, pero al cliente solo se le envía un mensaje general.
-    console.error(error);
-    res.status(500).json({
-      mensaje: "No se pudieron obtener las materias."
-    });
-  }
+    const materias = await Materia.find()
+    res.json(materias)
 }
 
 async function obtenerMateria(req, res) {
-  try {
-    const { codigo } = req.params;
-    // La búsqueda usa el código de negocio, nunca el identificador interno de MongoDB.
-    const materia = await Materia.findOne({ codigo });
+    const materia = await Materia.findOne({
+        codigo: req.params.codigo
+    })
 
     if (!materia) {
-      return res.status(404).json({
-        mensaje: "Materia no encontrada."
-      });
+        return res.status(404).json({
+            mensaje: "Materia no encontrada"
+        })
     }
 
-    res.json(materia);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      mensaje: "No se pudo consultar la materia."
-    });
-  }
+    res.json(materia)
 }
 
 async function crearMateria(req, res) {
-  try {
-    const cuerpo = req.body || {};
-    const errorValidacion = validarDatosMateria(cuerpo);
+    const { codigo, nombre, descripcion, cargaHoraria, estado } = req.body || {}
 
-    if (errorValidacion) {
-      return res.status(400).json({
-        mensaje: errorValidacion
-      });
+    if (!codigo || !nombre || cargaHoraria === undefined || !estado) {
+        return res.status(400).json({
+            mensaje: "Completá los campos obligatorios"
+        })
     }
 
-    const codigo = String(cuerpo.codigo).trim();
-    const nombre = String(cuerpo.nombre).trim();
-    const descripcion = cuerpo.descripcion === undefined ? "" : String(cuerpo.descripcion).trim();
-    const cargaHoraria = Number(cuerpo.cargaHoraria);
-    const estado = cuerpo.estado;
+    if (typeof codigo !== "string" || typeof nombre !== "string") {
+        return res.status(400).json({
+            mensaje: "El código y el nombre deben ser texto"
+        })
+    }
 
-    // Esta consulta permite responder pronto al duplicado; el índice único cubre carreras concurrentes.
-    const existe = await Materia.findOne({ codigo });
+    if (codigo !== codigo.trim() || !nombre.trim()) {
+        return res.status(400).json({
+            mensaje: "Revisá el código y el nombre"
+        })
+    }
 
+    if (descripcion !== undefined && typeof descripcion !== "string") {
+        return res.status(400).json({
+            mensaje: "La descripción debe ser un texto"
+        })
+    }
+
+    if (descripcion && !descripcion.trim()) {
+        return res.status(400).json({
+            mensaje: "La descripción no puede contener solo espacios"
+        })
+    }
+
+    const carga = Number(cargaHoraria)
+    if (!Number.isInteger(carga) || carga <= 0) {
+        return res.status(400).json({
+            mensaje: "La carga horaria debe ser un número entero mayor que cero"
+        })
+    }
+
+    if (estado !== "activa" && estado !== "inactiva") {
+        return res.status(400).json({
+            mensaje: "El estado debe ser activa o inactiva"
+        })
+    }
+
+    const existe = await Materia.findOne({ codigo })
     if (existe) {
-      return res.status(409).json({
-        mensaje: "Ya existe una materia con ese código."
-      });
+        return res.status(400).json({
+            mensaje: "Ya existe una materia con ese código"
+        })
     }
 
     const nuevaMateria = await Materia.create({
-      codigo,
-      nombre,
-      descripcion,
-      cargaHoraria,
-      estado
-    });
+        codigo,
+        nombre: nombre.trim(),
+        descripcion: descripcion ? descripcion.trim() : "",
+        cargaHoraria: carga,
+        estado
+    })
 
-    res.status(201).json(nuevaMateria);
-  } catch (error) {
-    console.error(error);
-
-    if (error.code === 11000) {
-      return res.status(409).json({
-        mensaje: "Ya existe una materia con ese código."
-      });
-    }
-
-    res.status(400).json({
-      mensaje: "No se pudo registrar la materia."
-    });
-  }
+    res.status(201).json(nuevaMateria)
 }
 
 async function actualizarMateria(req, res) {
-  try {
-    const { codigo: codigoOriginal } = req.params;
-    const cuerpo = req.body || {};
+    const codigoOriginal = req.params.codigo
+    const { codigo, nombre, descripcion, cargaHoraria, estado } = req.body || {}
+    const materiaExistente = await Materia.findOne({ codigo: codigoOriginal })
 
-    // Primero se obtiene la materia para confirmar que existe y completar los campos omitidos.
-    const materiaExistente = await Materia.findOne({ codigo: codigoOriginal });
     if (!materiaExistente) {
-      return res.status(404).json({
-        mensaje: "Materia no encontrada."
-      });
+        return res.status(404).json({
+            mensaje: "Materia no encontrada"
+        })
     }
 
-    // PUT puede enviar solo algunos campos; se combinan con los actuales para validar el resultado completo.
-    const materiaPropuesta = {
-      codigo: cuerpo.codigo !== undefined ? cuerpo.codigo : materiaExistente.codigo,
-      nombre: cuerpo.nombre !== undefined ? cuerpo.nombre : materiaExistente.nombre,
-      descripcion: cuerpo.descripcion !== undefined ? cuerpo.descripcion : materiaExistente.descripcion,
-      cargaHoraria: cuerpo.cargaHoraria !== undefined ? cuerpo.cargaHoraria : materiaExistente.cargaHoraria,
-      estado: cuerpo.estado !== undefined ? cuerpo.estado : materiaExistente.estado
-    };
+    const codigoNuevo = codigo === undefined ? materiaExistente.codigo : codigo
+    const nombreNuevo = nombre === undefined ? materiaExistente.nombre : nombre
+    const descripcionNueva = descripcion === undefined ? materiaExistente.descripcion : descripcion
+    const cargaNueva = cargaHoraria === undefined
+        ? materiaExistente.cargaHoraria
+        : Number(cargaHoraria)
+    const estadoNuevo = estado === undefined ? materiaExistente.estado : estado
 
-    const validacion = validarDatosMateria(materiaPropuesta);
-
-    if (validacion) {
-      return res.status(400).json({
-        mensaje: validacion
-      });
+    if (typeof codigoNuevo !== "string" || codigoNuevo !== codigoNuevo.trim()) {
+        return res.status(400).json({
+            mensaje: "El código no puede tener espacios al comienzo o al final"
+        })
     }
 
-    // El código puede cambiar, pero se busca el registro usando siempre el código anterior de la URL.
-    const codigoNuevo = materiaPropuesta.codigo;
+    if (typeof nombreNuevo !== "string" || !nombreNuevo.trim()) {
+        return res.status(400).json({
+            mensaje: "El nombre es obligatorio"
+        })
+    }
+
+    if (typeof descripcionNueva !== "string" || (descripcionNueva && !descripcionNueva.trim())) {
+        return res.status(400).json({
+            mensaje: "La descripción debe ser un texto válido"
+        })
+    }
+
+    if (!Number.isInteger(cargaNueva) || cargaNueva <= 0) {
+        return res.status(400).json({
+            mensaje: "La carga horaria debe ser un número entero mayor que cero"
+        })
+    }
+
+    if (estadoNuevo !== "activa" && estadoNuevo !== "inactiva") {
+        return res.status(400).json({
+            mensaje: "El estado debe ser activa o inactiva"
+        })
+    }
+
     if (codigoNuevo !== codigoOriginal) {
-      const existeCodigo = await Materia.findOne({ codigo: codigoNuevo });
-      if (existeCodigo) {
-        return res.status(409).json({
-          mensaje: "El código ya está en uso por otra materia."
-        });
-      }
+        const existe = await Materia.findOne({ codigo: codigoNuevo })
+        if (existe) {
+            return res.status(400).json({
+                mensaje: "El código ya existe"
+            })
+        }
     }
 
-    const datosActualizados = {
-      ...materiaPropuesta,
-      nombre: materiaPropuesta.nombre.trim(),
-      descripcion: materiaPropuesta.descripcion.trim(),
-      cargaHoraria: Number(materiaPropuesta.cargaHoraria)
-    };
+    const materia = await Materia.findOneAndUpdate(
+        { codigo: codigoOriginal },
+        {
+            codigo: codigoNuevo,
+            nombre: nombreNuevo.trim(),
+            descripcion: descripcionNueva.trim(),
+            cargaHoraria: cargaNueva,
+            estado: estadoNuevo
+        },
+        { returnDocument: "after" }
+    )
 
-    // runValidators hace que las reglas del esquema también se ejecuten durante la actualización.
-    const materiaActualizada = await Materia.findOneAndUpdate(
-      { codigo: codigoOriginal },
-      datosActualizados,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
-
-    if (!materiaActualizada) {
-      return res.status(404).json({
-        mensaje: "Materia no encontrada."
-      });
+    if (!materia) {
+        return res.status(404).json({
+            mensaje: "Materia no encontrada"
+        })
     }
 
-    res.json(materiaActualizada);
-  } catch (error) {
-    console.error(error);
-
-    if (error.code === 11000) {
-      return res.status(409).json({
-        mensaje: "Ya existe una materia con ese código."
-      });
-    }
-
-    res.status(400).json({
-      mensaje: "No se pudo actualizar la materia."
-    });
-  }
+    res.json(materia)
 }
 
 async function eliminarMateria(req, res) {
-  try {
-    const { codigo } = req.params;
-    // findOneAndDelete elimina por código y devuelve null si no había una materia coincidente.
-    const materia = await Materia.findOneAndDelete({ codigo });
+    const materia = await Materia.findOneAndDelete({
+        codigo: req.params.codigo
+    })
 
     if (!materia) {
-      return res.status(404).json({
-        mensaje: "Materia no encontrada."
-      });
+        return res.status(404).json({
+            mensaje: "Materia no encontrada"
+        })
     }
 
     res.json({
-      mensaje: "Materia eliminada correctamente."
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      mensaje: "No se pudo eliminar la materia."
-    });
-  }
+        mensaje: "Materia eliminada correctamente"
+    })
 }
 
 module.exports = {
-  obtenerMaterias,
-  obtenerMateria,
-  crearMateria,
-  actualizarMateria,
-  eliminarMateria
-};
+    obtenerMaterias,
+    obtenerMateria,
+    crearMateria,
+    actualizarMateria,
+    eliminarMateria
+}

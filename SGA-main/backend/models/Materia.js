@@ -1,72 +1,18 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose") // Importamos mongoose para poder definir el esquema de la materia
 
-// El esquema define la forma de cada documento y aplica reglas básicas antes de guardarlo.
-const materiaSchema = new mongoose.Schema(
-  {
-    codigo: {
-      type: String,
-      required: [true, "El código es obligatorio."],
-      // El código es la clave funcional: debe ser texto y conservarse sin espacios externos.
-      validate: {
-        validator: (valor) =>
-          typeof valor === "string" &&
-          valor.length > 0 &&
-          valor === valor.trim(),
-        message: "El código no puede estar vacío ni tener espacios al comienzo o al final.",
-      },
+const materiaSchema = new mongoose.Schema({ // Definimos el esquema de la materia
+    codigo: { // Definimos el campo codigo como un string único
+        type: String,
+        unique: true
     },
-    nombre: {
-      type: String,
-      required: [true, "El nombre es obligatorio."],
-      trim: true,
-      maxlength: [100, "El nombre no puede superar los 100 caracteres."],
-    },
-    descripcion: {
-      type: String,
-      default: "",
-      validate: {
-        validator: (valor) =>
-          typeof valor !== "string" ||
-          valor.length === 0 ||
-          valor.trim().length > 0,
-        message: "La descripción no puede contener únicamente espacios.",
-      },
-    },
-    cargaHoraria: {
-      type: Number,
-      required: [true, "La carga horaria es obligatoria."],
-      min: [1, "La carga horaria debe ser mayor que cero."],
-      // Mongoose también verifica que el valor numérico no tenga parte decimal.
-      validate: {
-        validator: Number.isInteger,
-        message: "La carga horaria debe ser un número entero.",
-      },
-    },
-    estado: {
-      type: String,
-      required: [true, "El estado es obligatorio."],
-      enum: {
-        values: ["activa", "inactiva"],
-        message: "El estado debe ser activa o inactiva.",
-      },
-    },
-  },
-  {
-    versionKey: false,
-    toJSON: {
-      transform(_documento, resultado) {
-        // El cliente identifica las materias por codigo, no por el _id interno de MongoDB.
-        delete resultado._id;
-        return resultado;
-      },
-    },
-  }
-);
+    nombre: String, // Definimos el campo nombre como un string
+    descripcion: String,// Definimos el campo descripcion como un string
+    cargaHoraria: Number,// Definimos el campo cargaHoraria como un número
+    estado: String// Definimos el campo estado como un string
+}, {
+    versionKey: false // Desactivamos la versión del documento para que no se guarde el campo __v en la base de datos
+})
 
-// Este índice único es la protección definitiva ante dos altas concurrentes con el mismo código.
-materiaSchema.index({ codigo: 1 }, { unique: true });
+const Materia = mongoose.model("Materia", materiaSchema)
 
-// El modelo conecta las consultas del controlador con la colección de materias.
-const Materia = mongoose.model("Materia", materiaSchema);
-
-module.exports = Materia;
+module.exports = Materia
