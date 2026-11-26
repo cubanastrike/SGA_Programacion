@@ -1,0 +1,11 @@
+{
+  "installCommand": "npm --prefix frontend-react ci",
+  "buildCommand": "npm --prefix frontend-react run build",
+  "outputDirectory": "frontend-react/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
