@@ -7,6 +7,7 @@ GET http://localhost:3000/alumnos/1002
 ###
 POST http://localhost:3000/alumnos
 Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
 
 {
     "legajo": 1023,
@@ -108,6 +109,8 @@ Content-Type: application/json
 DELETE http://localhost:3000/materias/PRG1
 
 
+
+# @name login
 #### Registrar un usuario válido
 POST http://localhost:3000/auth/login
 Content-Type: application/json
@@ -133,4 +136,4 @@ GET http://localhost:3000/alumnos
 
 ###
 GET http://localhost:3000/alumnos
-Authorization: Bearer {{token}}
+Authorization: Bearer {{login.response.body.token}}

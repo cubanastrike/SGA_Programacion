@@ -3,12 +3,12 @@ import { Alert, Box, Button, TextField, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/useAuth"
+import API_URL from "../config/api"
 
 export default function Login() {
     const navigate = useNavigate()
-    const { setToken } = useAuth()
+    const { setToken, usuario, setUsuario } = useAuth()
     const theme = useTheme()
-    const [usuario, setUsuario] = useState(null)
     const [error, setError] = useState("")
     const [cargando, setCargando] = useState(false)
     const [mensaje, setMensaje] = useState("")
@@ -23,7 +23,7 @@ export default function Login() {
         setMensaje("")
 
         try {
-            const respuesta = await fetch("http://localhost:3000/auth/login", {
+            const respuesta = await fetch(`${API_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -34,9 +34,16 @@ export default function Login() {
                 throw new Error(datos.mensaje || "No se pudo iniciar sesión")
             }
 
+            const usuarioAutenticado = {
+                id: datos.id,
+                nombre: datos.nombre,
+                email: datos.email,
+                rol: datos.rol,
+            }
             localStorage.setItem("token", datos.token)
+            localStorage.setItem("usuario", JSON.stringify(usuarioAutenticado))
             setToken(datos.token)
-            setUsuario(datos)
+            setUsuario(usuarioAutenticado)
             setMensaje(datos.mensaje)
             setEmail("")
             setPassword("")

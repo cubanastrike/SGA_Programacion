@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../context/useAuth"
-const API_ALUMNOS = "http://localhost:3000/alumnos"
+import API_URL from "../config/api"
+
+const API_ALUMNOS = `${API_URL}/alumnos`
 
 export function ListaAlumnos({ actualizar, onAlumnoCreado, onEditarAlumno }) {
-    const { token } = useAuth()
+    const { token, usuario } = useAuth()
     const [alumnos, setAlumnos] = useState([])
     const [cargando, setCargando] = useState(true)
     const [error, setError] = useState("")
@@ -79,22 +81,24 @@ export function ListaAlumnos({ actualizar, onAlumnoCreado, onEditarAlumno }) {
                                     <span className="student-card__name">{alumno.nombre}</span>
                                     <span className="student-card__career">{alumno.carrera}</span>
                                 </div>
-                                <div className="student-card__actions">
-                                    <button
-                                        className="button button--secondary"
-                                        type="button"
-                                        onClick={() => onEditarAlumno(alumno)}
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        className="button button--danger"
-                                        type="button"
-                                        onClick={() => eliminarAlumno(alumno.legajo)}
-                                    >
-                                        Eliminar
-                                    </button>
-                                </div>
+                                {usuario?.rol === "admin" && (
+                                    <div className="student-card__actions">
+                                        <button
+                                            className="button button--secondary"
+                                            type="button"
+                                            onClick={() => onEditarAlumno(alumno)}
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            className="button button--danger"
+                                            type="button"
+                                            onClick={() => eliminarAlumno(alumno.legajo)}
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                )}
                             </li>
                         ))}
                     </ul>

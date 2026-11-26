@@ -5,7 +5,6 @@ Proyecto desarrollado durante la materia Programación IV.
 ## Tecnologías
 
 - Frontend React: React, Vite, React Router y Material UI.
-- Frontend original: HTML, CSS y JavaScript.
 - Backend: Node.js, Express y Mongoose.
 - Base de datos: MongoDB.
 - Autenticación: bcrypt y JSON Web Tokens (JWT).
@@ -15,7 +14,8 @@ Proyecto desarrollado durante la materia Programación IV.
 - Gestión de alumnos, docentes y materias.
 - API REST conectada a MongoDB.
 - Inicio de sesión con email y contraseña.
-- Protección de rutas y operaciones de alumnos y docentes mediante JWT.
+- Protección de rutas mediante JWT.
+- Permisos por rol en alumnos: los administradores pueden modificar; los usuarios pueden consultar.
 - Cierre de sesión desde la interfaz React.
 
 ## Autenticación
@@ -27,6 +27,14 @@ a las rutas protegidas. La sesión se puede cerrar desde la navegación principa
 Configurar `PORT`, `MONGO_URI` y `JWT_SECRET` en `backend/.env`. La duración del
 token puede configurarse opcionalmente con `JWT_EXPIRES_IN`. No subir al
 repositorio archivos `.env` ni tokens reales.
+
+La URL del backend para React se configura opcionalmente con `VITE_API_URL` en
+`frontend-react/.env.local`. Si no se define, se usa `http://localhost:3000`.
+
+Desde `backend`, ejecutar `node crearUsuario.js` para crear el administrador de
+prueba o `node nuevoUsuario.js` para crear un usuario de consulta. Los comandos
+equivalentes de npm son `npm run crear-usuario` y
+`npm run crear-usuario-consulta`.
 
 ## Autoría
 
