@@ -41,6 +41,7 @@ export default function Header() {
                     <Link to="/alumnos">Alumnos</Link>
                     <Link to="/docentes">Docente</Link>
                     <Link to="/materias">Materias</Link>
+                    <Link to="/cursos">Cursos</Link>
                     <Link to="/ayuda" aria-label="Ayuda">?</Link>
                     <Button
                         type="button"

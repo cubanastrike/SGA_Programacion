@@ -7,7 +7,7 @@ GET http://localhost:3000/alumnos/1002
 ###
 POST http://localhost:3000/alumnos
 Content-Type: application/json
-Authorization: Bearer {{login.response.body.token}}
+Authorization: Bearer 
 
 {
     "legajo": 1023,
@@ -110,7 +110,7 @@ DELETE http://localhost:3000/materias/PRG1
 
 
 
-# @name login
+
 #### Registrar un usuario válido
 POST http://localhost:3000/auth/login
 Content-Type: application/json
@@ -129,11 +129,56 @@ Content-Type: application/json
 
 {
   "email": "mati@gmail.com",
-  "password": "incorrecta"
+  "password": "password123"
 }
 ###
 GET http://localhost:3000/alumnos
 
 ###
 GET http://localhost:3000/alumnos
-Authorization: Bearer {{login.response.body.token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDY0YmQzNTViMTU1YTYyNTQ2N2ExNCIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzk1NzE1NTQzLCJleHAiOjE3OTU3MjI3NDN9.O2y9Ht0aB14ymxl7zJfBVWDFTr8W8ddOdZzi7zzZziA
+
+
+### recuperatorio
+
+
+POST http://localhost:3000/cursos
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDY0YmQzNTViMTU1YTYyNTQ2N2ExNCIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzk1NzE1NTQzLCJleHAiOjE3OTU3MjI3NDN9.O2y9Ht0aB14ymxl7zJfBVWDFTr8W8ddOdZzi7zzZziA
+
+{
+    "codigo": "CUR001",
+
+    "nombre": "Programación",
+    "descripcion": "Desarrollo de aplicaciones ",
+    "duracion": 65
+}
+
+
+
+
+###
+GET http://localhost:3000/cursos/CUR001
+
+
+###
+PUT http://localhost:3000/cursos/CUR001
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDY0YmQzNTViMTU1YTYyNTQ2N2ExNCIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzk1NzE1NTQzLCJleHAiOjE3OTU3MjI3NDN9.O2y9Ht0aB14ymxl7zJfBVWDFTr8W8ddOdZzi7zzZziA
+
+
+{
+    "codigo": "CUR001",
+    "nombre": "Programación 4",
+    "descripcion": "Desarrollo de aplicaciones ",
+    "duracion": 65
+}
+
+###
+DELETE http://localhost:3000/cursos/CUR001
+
+
+###
+GET http://localhost:3000/cursos
+
+
